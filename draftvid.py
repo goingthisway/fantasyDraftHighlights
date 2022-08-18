@@ -6,7 +6,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import undetected_chromedriver as uc
+from selenium.webdriver.common.by import By
 
 #initialize chromecast
 if chromeCast:
@@ -202,11 +202,9 @@ def playVid(vLink):
     if chromeCast:
         ytc.play_video(vLink)
     else:
+        wait = WebDriverWait(youTubeDriver, 20)
         youTubeDriver.get(yt+vLink+yt2)
-        try:
-            playaE=youTubeDriver.find_element_by_id('movie_player').send_keys('f')
-        except:
-            nada=0
+        wait.until(EC.visibility_of_element_located((By.ID, "movie_player"))).send_keys("f")
     return 
 
 #searches Youtube for link
