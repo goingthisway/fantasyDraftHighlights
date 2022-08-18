@@ -1,7 +1,7 @@
 
-site="sleeper"
+site="basmith7"
 teams=12
-rounds=16
+rounds=15
 chromeCast=False
 chromeCastName="YOUR CHROMECAST NAME HERE"
 draftBoardVisible=False
@@ -11,4 +11,4 @@ autoSearch=True
 boardNum=12345
 
 #basmith7 ONLY, basmith7URL is required (quotes needed)
-basmith7URL="https://entireUrlHere"
+basmith7URL="https://docs.google.com/spreadsheets/d/1IcYNiZGCbNlC_lWAB2R2zWS9VWyN0nvIG_Jl4jL_GMM/edit?usp=sharing"

@@ -1,5 +1,11 @@
 import re, requests,json
 from config import *
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 #initialize chromecast
 if chromeCast:
@@ -55,14 +61,14 @@ if chromeCast==False or site=="clicky" or site=="espn" or site=="yahoo":
     prefs={"profile.default_content_setting_values.notifications":2}
     # this section is for draftboard selenium use cases (non youtube)
     if site=="clicky" or site=="espn" or site=="yahoo":
-        draftOptions=webdriver.ChromeOptions()
+        draftOptions=Options()
         draftOptions.add_experimental_option("prefs",prefs)
         draftOptions.add_experimental_option('excludeSwitches', ['enable-logging'])
         draftOptions.add_argument('disable-infobars')
         #cannot be headless for espn or yahoo because you need to log in.
         if draftBoardVisible==False and site!="espn" and site!="yahoo":
             draftOptions.add_argument("--headless")
-        draftDriver=webdriver.Chrome(chrome_options=draftOptions)
+        draftDriver=webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=draftOptions)
         if site=="clicky":
             draftDriver.get('https://clickydraft.com/draftapp/board/'+str(boardNum))
         elif site=="espn" or site=="yahoo":
@@ -98,14 +104,14 @@ if chromeCast==False or site=="clicky" or site=="espn" or site=="yahoo":
 
 #setting up youtube display for selenium
 if chromeCast==False:
-    youTubeOptions=webdriver.ChromeOptions()
+    youTubeOptions=Options()
     #youTubeOptions.add_argument("user-data-dir=youTube")
     youTubeOptions.add_argument("--start-maximized")
     youTubeOptions.add_argument("--kiosk")
     youTubeOptions.add_argument('disable-infobars')
     youTubeOptions.add_experimental_option('excludeSwitches', ['enable-logging'])
     youTubeOptions.add_experimental_option("prefs",prefs)
-    youTubeDriver=webdriver.Chrome(chrome_options=youTubeOptions)
+    youTubeDriver=webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=youTubeOptions)
     youTubeDriver.get("https://www.youtube.com")
 
 
@@ -125,15 +131,19 @@ def findClickyTag(html,x):
         return -1,html
     return s.sub('',xhtml[:end]),xhtml
 def findbasmith7Tag(html):
-    if html.find('1050371') < 0:
+    if html.find('1795') < 0:
+        print("false line 131")
         return False,"","","",""
     else:
-        html=html[html.find('1050371')+21:]
+        html=html[html.find('1795')+16:]
         fullName=html[:html.find('\\n')]
         posString=html[html.find('\\n')+2:]
         dashLoc=posString.find(' - ')
         pos=posString[:dashLoc]
         team=posString[dashLoc+3:dashLoc+6]
+        print(f"full name is: {fullName}")
+        print(f"pos is: {pos}")
+        print(f"team is: {team}")
         return True,s.sub('',fullName),pos,team,html
 def findEspnTag(html):
     nText='<span class="playerinfo__playername">'
@@ -225,6 +235,7 @@ def addPlayer(thisPlayer,pTable,choiceActive,vDict,vStr,fName,lName):
         except KeyError:
             vLink=""
         if choiceActive:
+            print(f"link should be {vLink}")
             if vLink!="":
                 playVid(vLink)
             elif autoSearch:
@@ -297,11 +308,14 @@ while (True):
         html=html[:html.find(";")]
         while True:
             foundName,fullName,pos,team,html=findbasmith7Tag(html)
+            print(foundName, fullName, pos, team)
             if foundName:
                 vStr=s.sub('',str(pos)+str(team)+str(fullName))
+                print(fullName)
                 thisPlayer=[pos,team,fullName]
                 pTable=addPlayer(thisPlayer,pTable,choiceActive,vDict,vStr,"",fullName)
             else:
+                print("no player found")
                 break
     elif site=="espn":
         html=draftDriver.page_source   
