@@ -6,6 +6,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import undetected_chromedriver as uc
 
 #initialize chromecast
 if chromeCast:
@@ -109,6 +110,7 @@ if chromeCast==False:
     youTubeOptions.add_argument("--start-maximized")
     youTubeOptions.add_argument("--kiosk")
     youTubeOptions.add_argument('disable-infobars')
+    youTubeOptions.add_extension("/Users/MaxSalem/Documents/GitHub/fantasyDraftHighlights/uBlock-Origin.crx")
     youTubeOptions.add_experimental_option('excludeSwitches', ['enable-logging'])
     youTubeOptions.add_experimental_option("prefs",prefs)
     youTubeDriver=webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=youTubeOptions)
@@ -202,11 +204,7 @@ def playVid(vLink):
     else:
         youTubeDriver.get(yt+vLink+yt2)
         try:
-            playaE=youTubeDriver.find_element_by_id('movie_player')
-        except:
-            nada=0
-        try:
-            playaE.send_keys('f')
+            playaE=youTubeDriver.find_element_by_id('movie_player').send_keys('f')
         except:
             nada=0
     return 
